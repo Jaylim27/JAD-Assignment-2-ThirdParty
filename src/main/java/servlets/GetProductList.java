@@ -29,111 +29,116 @@ public class GetProductList extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String search = request.getParameter("search"); 
-		String productIdStr = request.getParameter("productId"); 
-		
-		Client client = ClientBuilder.newClient(); 
-		
-		try { 
-            // ===========================
-            // 1) GET Product BY ID 
-            // ===========================
-			
-			if (productIdStr != null && !productIdStr.trim().isEmpty()) { 
-				int productId; 
-				
-				try { 
+		String search = request.getParameter("search");
+		String productIdStr = request.getParameter("productId");
+
+		Client client = ClientBuilder.newClient();
+
+		try {
+			// ===========================
+			// 1) GET Product BY ID
+			// ===========================
+
+			if (productIdStr != null && !productIdStr.trim().isEmpty()) {
+				int productId;
+
+				try {
 					productId = Integer.parseInt(productIdStr.trim());
 				} catch (NumberFormatException ex) {
 					request.setAttribute("err", "InvalidId");
-					RequestDispatcher rd = request.getRequestDispatcher("products/details.jsp"); 
+					RequestDispatcher rd = request.getRequestDispatcher("products/details.jsp");
 					rd.forward(request, response);
 					return;
 				}
-				
-				String restUrl = "http://localhost:8081/services/" + productId; 
+
+				String restUrl = "http://localhost:8081/services/" + productId;
 				WebTarget target = client.target(restUrl);
-				
+
 				Invocation.Builder invocationBuilder = target.request(MediaType.APPLICATION_JSON);
-				Response resp = invocationBuilder.get(); 
-				
+				Response resp = invocationBuilder.get();
+
 				System.out.println("GET BY ID status: " + resp.getStatus());
-				
+
 				if (resp.getStatus() == Response.Status.OK.getStatusCode()) {
-					Product product = resp.readEntity(Product.class); 
-					
-					request.setAttribute("product", product); 
+					Product product = resp.readEntity(Product.class);
+
+					request.setAttribute("product", product);
 					request.setAttribute("productId", productId);
-					
+
 					RequestDispatcher rd = request.getRequestDispatcher("products/details.jsp");
 					rd.forward(request, response);
 					return;
 				} else if (resp.getStatus() == Response.Status.NOT_FOUND.getStatusCode()) {
 					request.setAttribute("err", "NotFound");
-					request.setAttribute("productId" , productId);
-					
+					request.setAttribute("productId", productId);
+
 					RequestDispatcher rd = request.getRequestDispatcher("products/details.jsp");
 					rd.forward(request, response);
-					return; 
-				} else { 
+					return;
+				} else {
 					request.setAttribute("err", "ApiError");
-					request.setAttribute("productId", productId); 
-					
-                    RequestDispatcher rd = request.getRequestDispatcher("products/details.jsp");
-                    rd.forward(request, response);
-                    return;
+					request.setAttribute("productId", productId);
+
+					RequestDispatcher rd = request.getRequestDispatcher("products/details.jsp");
+					rd.forward(request, response);
+					return;
 				}
 			}
-			
-            // ===========================
-            // 2) GET ALL PRODUCTS
-            // ===========================
-			String restUrl = "http://localhost:8081/services"; 
-			WebTarget target = client.target(restUrl); 
-			
-			if (search !=null && !search.trim().isEmpty()) {
+
+			// ===========================
+			// 2) GET ALL PRODUCTS
+			// ===========================
+			String restUrl = "http://localhost:8081/services";
+			WebTarget target = client.target(restUrl);
+
+			if (search != null && !search.trim().isEmpty()) {
 				target = target.queryParam("search", search.trim());
 			}
-			
-			Invocation.Builder invocationBuilder = target.request(MediaType.APPLICATION_JSON); 
-			Response resp = invocationBuilder.get(); 
-			
+
+			Invocation.Builder invocationBuilder = target.request(MediaType.APPLICATION_JSON);
+			Response resp = invocationBuilder.get();
+
 			System.out.println("GET ALL status: " + resp.getStatus());
 
-            if (resp.getStatus() == Response.Status.OK.getStatusCode()) {
-                ArrayList<Product> products = resp.readEntity(new GenericType<ArrayList<Product>>() {});
+			if (resp.getStatus() == Response.Status.OK.getStatusCode()) {
+				ArrayList<Product> products = resp.readEntity(new GenericType<ArrayList<Product>>() {
+				});
 
-                request.setAttribute("ProductArray", products);
-                request.setAttribute("search", search);
+				request.setAttribute("ProductArray", products);
+				request.setAttribute("search", search);
 
-                RequestDispatcher rd = request.getRequestDispatcher("products/index.jsp");
-                rd.forward(request, response);
+				RequestDispatcher rd = request.getRequestDispatcher("products/index.jsp");
+				rd.forward(request, response);
 
-            } else {
-                request.setAttribute("err", "NotFound");
-                request.setAttribute("search", search);
+			} else {
+				request.setAttribute("err", "NotFound");
+				request.setAttribute("search", search);
 
-                RequestDispatcher rd = request.getRequestDispatcher("products/index.jsp");
-                rd.forward(request, response);
-            }
+				RequestDispatcher rd = request.getRequestDispatcher("products/index.jsp");
+				rd.forward(request, response);
+			}
 
-        } catch (Exception e) {
-            e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
 
-            request.setAttribute("err", "ServerError");
+			request.setAttribute("err", "ServerError");
 
-            // If you were trying to load a single event, go details; else go index.
-            if (productIdStr != null && !productIdStr.trim().isEmpty()) {
-                RequestDispatcher rd = request.getRequestDispatcher("products/details.jsp");
-                rd.forward(request, response);
-            } else {
-                RequestDispatcher rd = request.getRequestDispatcher("products/index.jsp");
-                rd.forward(request, response);
-            }
-        } finally {
-            try { client.close(); } catch (Exception ignored) {}
-        }
-    }
+			// If you were trying to load a single event, go details; else go index.
+			if (productIdStr != null && !productIdStr.trim().isEmpty()) {
+				RequestDispatcher rd = request.getRequestDispatcher("products/details.jsp");
+				rd.forward(request, response);
+			} else {
+				RequestDispatcher rd = request.getRequestDispatcher("products/index.jsp");
+				rd.forward(request, response);
+			}
+		} finally {
+			try {
+				client.close();
+			} catch (Exception ignored) {
+			}
+		}
+	}
+
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		doGet(request, response);

@@ -2,6 +2,7 @@
 	pageEncoding="UTF-8"%>
 
 <%@ page import="dbaccess.Product"%>
+<%@ page import="java.util.Map" %>
 
 <!DOCTYPE html>
 <html>
@@ -154,6 +155,14 @@ body {
 	position: relative;
 }
 
+.heroTop img { 
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+	background: #fff;
+	display: block;
+}
+
 .idTag {
 	position: absolute;
 	top: 12px;
@@ -269,6 +278,13 @@ h1 {
 			</div>
 
 			<%
+			@SuppressWarnings("unchecked")
+			Map<Integer, String> productImageMap = (Map<Integer, String>) request.getAttribute("productImageMap"); 
+			String defaultImg = (String) request.getAttribute("defaultImg");  
+			if (defaultImg == null || defaultImg.isBlank()) {
+			    defaultImg = request.getContextPath() + "/images/services/default.png";
+			}
+			
 			String err = (String) request.getAttribute("err");
 			Product product = (Product) request.getAttribute("product");
 			Object productIdObj = request.getAttribute("productId");
@@ -296,6 +312,11 @@ h1 {
 				services</a>
 			<%
 			} else {
+			    int pid = product.getProductId();
+			    String imgSrc = defaultImg;
+			    if (productImageMap != null && productImageMap.containsKey(pid)) {
+			        imgSrc = productImageMap.get(pid);
+			    }
 			%>
 
 			<div class="detailsGrid">
@@ -303,6 +324,7 @@ h1 {
 				<!-- Main details -->
 				<div class="card">
 					<div class="heroTop">
+						<img src="<%= imgSrc %>" alt="Service image" />
 						<div class="idTag">
 							Service ID:
 							<%=product.getProductId()%></div>

@@ -3,6 +3,7 @@
 
 <%@ page import="java.util.List" %>
 <%@ page import="dbaccess.Product" %>
+<%@ page import="java.util.Map" %>
 
 <!DOCTYPE html>
 <html>
@@ -156,10 +157,17 @@
   }
 
   .serviceTop{
-    height: 110px;
+    height: 200px;
     background: linear-gradient(135deg, rgba(14,165,233,.18), rgba(34,197,94,.18));
     border-bottom:1px solid var(--line);
     position:relative;
+  }
+
+  .serviceTop img{
+    width:100%;
+    height:100%;
+    object-fit:fill;
+    display:block;
   }
 
   .serviceBody{
@@ -275,6 +283,11 @@
     <%
       @SuppressWarnings("unchecked")
       List<Product> services = (List<Product>) request.getAttribute("ProductArray");
+    
+      @SuppressWarnings("unchecked")
+      Map<Integer, String> imageMap = (Map<Integer, String>) request.getAttribute("productImageMap");
+
+      String defaultImg = (String) request.getAttribute("defaultImg");
 
       if (services == null || services.isEmpty()) {
     %>
@@ -286,9 +299,16 @@
       <div class="grid">
         <%
           for (Product s : services) {
+        	  
+          String imgSrc = defaultImg;
+          if (imageMap != null && imageMap.containsKey(s.getProductId())) {
+            imgSrc = imageMap.get(s.getProductId());
+          }
         %>
           <div class="serviceCard">
-            <div class="serviceTop"></div>
+            <div class="serviceTop">
+            	<img src="<%= imgSrc %>" alt="Service image">
+            </div>
 
             <div class="serviceBody">
               <h3 class="serviceTitle"><%= s.getName() %></h3>

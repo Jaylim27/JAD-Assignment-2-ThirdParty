@@ -10,6 +10,8 @@ import jakarta.servlet.RequestDispatcher;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashMap;         
+import java.util.Map; 
 
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
@@ -27,6 +29,27 @@ import dbaccess.Product;
 @WebServlet("/GetProductList")
 public class GetProductList extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	
+    /* =========================
+    Product Image Map
+    ========================= */
+	private Map<Integer, String> buildProductImageMap(HttpServletRequest request) {  // CHANGED: new helper
+     Map<Integer, String> m = new HashMap<>();
+     String p = request.getContextPath() + "/images/services/";
+
+     m.put(1,  p + "personalCare.png");        // Personal Care – 2H
+     m.put(2,  p + "personalCare.png");        // Personal Care – 4H
+     m.put(3,  p + "medicalMonitoring.png");   // Medical Monitoring – 4H
+     m.put(4,  p + "medication.png");          // Medication Management
+     m.put(5,  p + "companionship.png");       // Companionship – 2H
+     m.put(6,  p + "companionship.png");       // Companionship – 4H
+     m.put(7,  p + "housekeeping.png");        // Light Housekeeping
+     m.put(8,  p + "mealPrep.png");            // Meal Preparation
+     m.put(9,  p + "transportMed.png");        // Medical Transport
+     m.put(10, p + "transportShop.png");       // Shopping Transport
+
+     return m;
+ }
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String search = request.getParameter("search");
@@ -64,6 +87,9 @@ public class GetProductList extends HttpServlet {
 
 					request.setAttribute("product", product);
 					request.setAttribute("productId", productId);
+					
+				    request.setAttribute("productImageMap", buildProductImageMap(request));
+				    request.setAttribute("defaultImg", request.getContextPath() + "/images/services/default.png");
 
 					RequestDispatcher rd = request.getRequestDispatcher("products/details.jsp");
 					rd.forward(request, response);
@@ -106,6 +132,10 @@ public class GetProductList extends HttpServlet {
 
 				request.setAttribute("ProductArray", products);
 				request.setAttribute("search", search);
+				
+                request.setAttribute("productImageMap", buildProductImageMap(request));
+                request.setAttribute("defaultImg",
+                request.getContextPath() + "/images/services/default.png");
 
 				RequestDispatcher rd = request.getRequestDispatcher("products/index.jsp");
 				rd.forward(request, response);

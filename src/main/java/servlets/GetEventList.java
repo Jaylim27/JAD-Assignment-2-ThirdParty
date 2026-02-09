@@ -73,6 +73,19 @@ public class GetEventList extends HttpServlet {
 	         return "-";
 	     }
 	 }
+	 
+	    /* =========================
+	     Event Image Map
+		  ========================= */
+		  private Map<Integer, String> buildImageMap(HttpServletRequest request) {
+		      Map<Integer, String> m = new HashMap<>();
+		      String p = request.getContextPath() + "/images/events/";
+		
+		      m.put(2, p + "silvercareOrientation.png");
+		      m.put(3, p + "chineseNewYear.png");
+		
+		      return m;
+		  }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
@@ -85,6 +98,16 @@ public class GetEventList extends HttpServlet {
         Client client = ClientBuilder.newClient();
 
         try {
+            // ===========================
+            // Build image map ONCE + set common request attributes ONCE
+            // ===========================
+            Map<Integer, String> imgMap = buildImageMap(request); // CHANGED
+            request.setAttribute("imageMap", imgMap); // CHANGED
+            request.setAttribute(
+                "defaultImg",
+                request.getContextPath() + "/images/events/default.png"
+            ); 
+            
             // ===========================
             // 1) GET EVENT BY ID 
             // ===========================
@@ -120,6 +143,14 @@ public class GetEventList extends HttpServlet {
 
                     request.setAttribute("event", event);
                     request.setAttribute("eventId", eventId);
+                    
+                    request.setAttribute(
+                            "imgSrc",
+                            imgMap.getOrDefault(
+                                event.getEventId(), // CHANGED (safer than eventId var)
+                                request.getContextPath() + "/images/events/default.png" // CHANGED
+                            )
+                        ); 
 
                     RequestDispatcher rd = request.getRequestDispatcher("events/details.jsp");
                     rd.forward(request, response);

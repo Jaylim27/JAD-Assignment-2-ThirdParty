@@ -30,6 +30,28 @@ import dbaccess.Timeslot;
 @WebServlet("/GetProductBookingDetails")
 public class GetProductBookingDetails extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	
+	/* =========================
+	   Product Image Map
+	   ========================= */
+	private Map<Integer, String> buildProductImageMap(HttpServletRequest request) {
+	    Map<Integer, String> m = new HashMap<>();
+	    String p = request.getContextPath() + "/images/services/";
+
+	    m.put(1,  p + "personalCare.png");
+	    m.put(2,  p + "personalCare.png");
+	    m.put(3,  p + "medicalMonitoring.png");
+	    m.put(4,  p + "medication.png");
+	    m.put(5,  p + "companionship.png");
+	    m.put(6,  p + "companionship.png");
+	    m.put(7,  p + "housekeeping.png");
+	    m.put(8,  p + "mealPrep.png");
+	    m.put(9,  p + "transportMed.png");
+	    m.put(10, p + "transportShop.png");
+
+	    return m;
+	}
+
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String productIdStr = request.getParameter("productId");
@@ -73,6 +95,9 @@ public class GetProductBookingDetails extends HttpServlet {
 				request.setAttribute("product", product);
 				request.setAttribute("timeslots", timeslots);
 				request.setAttribute("productId", productId);
+				request.setAttribute("productImageMap", buildProductImageMap(request));
+				request.setAttribute("defaultImg", request.getContextPath() + "/images/services/default.png");
+
 
 				RequestDispatcher rd = request.getRequestDispatcher("products/booking.jsp");
 				rd.forward(request, response);

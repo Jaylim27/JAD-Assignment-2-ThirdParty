@@ -125,10 +125,17 @@
   }
 
   .heroTop{
-    height: 140px;
+    height: 180px;
     background: linear-gradient(135deg, rgba(14,165,233,.18), rgba(34,197,94,.18));
     border-bottom:1px solid var(--line);
     position:relative;
+  }
+  
+  .heroTop img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
   }
   .idTag{
     position:absolute;
@@ -248,6 +255,11 @@
       if (endTimeDisplay == null || endTimeDisplay.isBlank()) endTimeDisplay = "-";
       if (createdAtDisplay == null || createdAtDisplay.isBlank()) createdAtDisplay = "-";
       if (updatedAtDisplay == null || updatedAtDisplay.isBlank()) updatedAtDisplay = "-";
+      
+      String imgSrc = (String) request.getAttribute("imgSrc");
+      if (imgSrc == null || imgSrc.isBlank()) {
+        imgSrc = request.getContextPath() + "/images/events/default.png";
+      }
 
       
       Object eventIdObj = request.getAttribute("eventId");
@@ -275,6 +287,7 @@
       <!-- Main details -->
       <div class="card">
         <div class="heroTop">
+        	<img src="<%= imgSrc %>" alt="Event image">
           <div class="idTag">Event ID: <%= event.getEventId() %></div>
         </div>
 
@@ -318,6 +331,9 @@
               <span class="detailLabel">Capacity:</span>
               <span class="detailValue"><%= event.getCapacity() %></span>
             </div>
+            <div class="sideActions">
+				<a class="btn primary" href="<%=request.getContextPath()%>/GetEventBookingDetails?eventId=<%= event.getEventId() %>">Book Now!</a>
+			</div>
           </div>
         </div>
       </div>

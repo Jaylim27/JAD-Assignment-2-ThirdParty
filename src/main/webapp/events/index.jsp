@@ -158,9 +158,14 @@
   }
   .eventTop{
     height: 110px;
-    background: linear-gradient(135deg, rgba(14,165,233,.18), rgba(34,197,94,.18));
     border-bottom:1px solid var(--line);
     position:relative;
+    overflow:hidden;
+  }
+  .eventTop img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
   }
   .pill{
     position:absolute;
@@ -280,7 +285,11 @@
 
       @SuppressWarnings("unchecked")
       Map<Integer, String> endMap = (Map<Integer, String>) request.getAttribute("endTimeDisplayMap");
+    		  
+      @SuppressWarnings("unchecked")
+      Map<Integer,String> imageMap = (Map<Integer,String>) request.getAttribute("imageMap");
 
+      String defaultImg = (String) request.getAttribute("defaultImg");
 
       if (events == null || events.isEmpty()) {
     %>
@@ -292,11 +301,18 @@
       <div class="grid">
         <%
           for (Event e : events) {
+          String img = (imageMap != null && imageMap.containsKey(e.getEventId()))
+        		? imageMap.get(e.getEventId())
+        		: defaultImg;
+
+          String start = startMap != null ? startMap.get(e.getEventId()) : "-";
+          String end = endMap != null ? endMap.get(e.getEventId()) : "-";
         %>
           <div class="eventCard">
-            <div class="eventTop">
-              <div class="pill">Event ID: <%= e.getEventId() %></div>
-            </div>
+		    <div class="eventTop">
+		      <img src="<%= img %>" alt="Event image">
+		      <div class="pill">Event ID: <%= e.getEventId() %></div>
+		    </div>
 
             <div class="eventBody">
               <h3 class="eventTitle"><%= e.getTitle() %></h3>

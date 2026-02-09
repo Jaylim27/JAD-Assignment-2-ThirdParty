@@ -428,9 +428,9 @@ input:focus, select:focus {
               <label for="gender">Gender</label>
               <select id="gender" name="gender" required>
                 <option value="">Select Gender</option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-                <option value="other">Other</option>
+                <option value="M">Male</option>
+                <option value="F">Female</option>
+                <option value="O">Other</option>
               </select>
             </div>
 
@@ -455,7 +455,7 @@ input:focus, select:focus {
                       String datePart = slot.getAvailabilityDate() != null ?
                         slot.getAvailabilityDate().substring(0, 10) : "N/A";
                 %>
-                      <option value="<%=datePart%>">
+                      <option value="<%=slot.getAvailabilityId()%>">
                         <%=datePart%> | <%=slot.getStartTime()%> – <%=slot.getEndTime()%>
                       </option>
                 <%

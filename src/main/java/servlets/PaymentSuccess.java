@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import dbaccess.Product;
+import dbaccess.Timeslot;
 
 /**
  * Servlet implementation class PaymentSuccess
@@ -27,14 +28,14 @@ import dbaccess.Product;
 @WebServlet("/PaymentSuccess")
 public class PaymentSuccess extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public PaymentSuccess() {
-        super();
-        // TODO Auto-generated constructor stub
-    }
+
+	/**
+	 * @see HttpServlet#HttpServlet()
+	 */
+	public PaymentSuccess() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
@@ -46,6 +47,10 @@ public class PaymentSuccess extends HttpServlet {
 			return;
 		}
 		
+		String url;
+		WebTarget target;
+		Invocation.Builder invocationBuilder;
+		
 		HttpSession httpSession = request.getSession();
 		double total = (double) httpSession.getAttribute("total");
 		String productId = (String) httpSession.getAttribute("productId");
@@ -55,8 +60,14 @@ public class PaymentSuccess extends HttpServlet {
 		String gender = (String) httpSession.getAttribute("gender");
 		String phone = (String) httpSession.getAttribute("phone");
 		String email = (String) httpSession.getAttribute("email");
-		String timeslot = (String) httpSession.getAttribute("timeslot");
+		String timeslotId = (String) httpSession.getAttribute("timeslot");
 		
+		Client client = ClientBuilder.newClient();
+		url = "http://localhost:8081/services/timeslots/" + timeslotId;
+		target = client.target(url);
+		invocationBuilder = target.request(MediaType.APPLICATION_JSON);
+		Response timeslotData = invocationBuilder.get();
+		Timeslot timeslot = timeslotData.readEntity(Timeslot.class);
 		Map<String, String> bookingData = new HashMap<>();
     bookingData.put("firstName", firstName);
     bookingData.put("lastName", lastName);
@@ -64,30 +75,35 @@ public class PaymentSuccess extends HttpServlet {
     bookingData.put("gender", gender);
     bookingData.put("phone", phone);
     bookingData.put("email", email);
-    bookingData.put("timeslot", timeslot);
+    String datePart = timeslot.getAvailabilityDate() != null ?
+        timeslot.getAvailabilityDate().substring(0, 10) : "N/A";
+    bookingData.put("bookingTimeslot", datePart + " " + timeslot.getStartTime());
+    bookingData.put("caregiverId", timeslot.getCaregiverId() + "");
+    
+    System.out.println(bookingData);
 		
-		Client client = ClientBuilder.newClient();
-		String url = "http://localhost:8081/services/book/" + productId;
-		WebTarget target = client.target(url);
-		Invocation.Builder invocationBuilder = target.request(MediaType.APPLICATION_JSON);
+		url = "http://localhost:8081/services/book/" + productId;
+		target = client.target(url);
+		invocationBuilder = target.request(MediaType.APPLICATION_JSON);
+		Response bookingResp = invocationBuilder.post(Entity.json(bookingData));
 		
-		Response resp = invocationBuilder.post(Entity.json(bookingData));
+		System.out.println("POST /booking: " + bookingResp.getStatus());
 		
-		if (resp.getStatus() == Response.Status.OK.getStatusCode()) {
-			httpSession.invalidate();
-			
+		if (bookingResp.getStatus() == Response.Status.CREATED.getStatusCode()) {
 			request.setAttribute("total", total);
-			
 			RequestDispatcher rd = request.getRequestDispatcher("products/payment-success.jsp");
 			rd.forward(request, response);
 		} else {
-			RequestDispatcher rd = request.getRequestDispatcher("products/index.jsp");
+			RequestDispatcher rd = request.getRequestDispatcher("/GetProductList");
 			rd.forward(request, response);
 		}
+		
+		httpSession.invalidate();
 	}
 
 	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
+	 *      response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub

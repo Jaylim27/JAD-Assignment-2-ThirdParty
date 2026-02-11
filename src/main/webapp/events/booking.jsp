@@ -23,29 +23,35 @@
   --radius: 16px;
 }
 
+/* Global reset for consistent sizing */
 * { box-sizing: border-box; }
 html, body { height: 100%; margin: 0; }
 
+/* Page base styling */
 body {
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
   background: var(--bg);
   color: var(--text);
 }
 
+/* Layout wrapper to keep footer at bottom */
 .page-layout {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
 
+/* Main content grows to fill remaining space */
 .page-content { flex: 1; }
 
+/* Centered container */
 .container {
   max-width: 1100px;
   margin: 0 auto;
   padding: 18px 16px 34px;
 }
 
+/* Breadcrumb row (left) + back button (right) */
 .crumbRow {
   display: flex;
   align-items: center;
@@ -61,11 +67,13 @@ body {
   gap: 6px;
 }
 
+/* Breadcrumb text */
 .crumb {
   color: var(--muted);
   font-size: 13.5px;
 }
 
+/* Breadcrumb links */
 .crumb a {
   color: var(--muted);
   text-decoration: none;
@@ -74,6 +82,7 @@ body {
 
 .crumb a:hover { color: var(--text); }
 
+/* Button base */
 .btn {
   border: none;
   cursor: pointer;
@@ -89,18 +98,21 @@ body {
   gap: 8px;
 }
 
+/* Primary button style */
 .btn.primary {
   background: linear-gradient(135deg, var(--brand), #38bdf8);
   color: #fff;
   box-shadow: 0 10px 18px rgba(14, 165, 233, .18);
 }
 
+/* Ghost button style */
 .btn.ghost {
   background: #fff;
   border: 1px solid var(--line);
   color: var(--text);
 }
 
+/* Message banner base */
 .msg {
   border-radius: 12px;
   padding: 12px 14px;
@@ -110,28 +122,33 @@ body {
   border: 1px solid;
 }
 
+/* Error banner style */
 .msg.error {
   color: #991b1b;
   background: #fee2e2;
   border-color: #fecaca;
 }
 
+/* Success banner style */
 .msg.success {
   color: #166534;
   background: #dcfce7;
   border-color: #bbf7d0;
 }
 
+/* Two-column layout: left summary + right form */
 .bookingGrid {
   display: grid;
   grid-template-columns: 1.25fr .75fr;
   gap: 14px;
 }
 
+/* Responsive: stack into one column */
 @media (max-width: 980px) {
   .bookingGrid { grid-template-columns: 1fr; }
 }
 
+/* Card container style */
 .card {
   background: var(--card);
   border: 1px solid var(--line);
@@ -140,6 +157,7 @@ body {
   overflow: hidden;
 }
 
+/* Event hero image area */
 .heroTop{
   height: 180px;
   background: linear-gradient(135deg, rgba(14,165,233,.18), rgba(34,197,94,.18));
@@ -147,6 +165,7 @@ body {
   position:relative;
 }
   
+/* Ensures image fills the hero area without distortion */
 .heroTop img{
   width:100%;
   height:100%;
@@ -154,6 +173,7 @@ body {
   display:block;
 }
 
+/* Event ID pill shown on image */
 .idTag {
   position: absolute;
   top: 12px;
@@ -167,10 +187,12 @@ body {
   color: var(--muted);
 }
 
+/* Card internal padding */
 .cardBody {
   padding: 14px 16px 16px;
 }
 
+/* Title row layout */
 .titleRow {
   display: flex;
   align-items: flex-start;
@@ -180,6 +202,7 @@ body {
   margin-bottom: 8px;
 }
 
+/* Main heading */
 h1 {
   margin: 0;
   font-size: 22px;
@@ -187,6 +210,7 @@ h1 {
   line-height: 1.2;
 }
 
+/* Secondary line (location) */
 .subline {
   margin: 0;
   color: var(--muted);
@@ -195,6 +219,7 @@ h1 {
   font-weight: 800;
 }
 
+/* Event description text */
 .desc {
   margin: 12px 0 0;
   color: var(--text);
@@ -202,6 +227,7 @@ h1 {
   line-height: 1.7;
 }
 
+/* Block for key-value event details */
 .detailsBlock {
   margin-top: 12px;
   padding-top: 10px;
@@ -229,16 +255,19 @@ h1 {
   word-break: break-word;
 }
 
+/* Right-side form card padding */
 .formCard {
   padding: 14px 16px 16px;
 }
 
+/* Form card title */
 .formCard h2 {
   margin: 0 0 14px;
   font-size: 18px;
   letter-spacing: .2px;
 }
 
+/* Form layout */
 form { display: grid; gap: 14px; }
 
 .formGroup {
@@ -253,6 +282,7 @@ label {
   color: var(--text);
 }
 
+/* Input base style */
 input {
   padding: 10px 12px;
   border: 1px solid var(--line);
@@ -262,11 +292,13 @@ input {
   color: var(--text);
 }
 
+/* Input focus style */
 input:focus {
   outline: none;
   border-color: var(--brand);
 }
 
+/* Button area for the form */
 .formActions {
   margin-top: 10px;
   display: flex;
@@ -278,13 +310,16 @@ input:focus {
 
 <body class="page-layout">
 
+<!-- Shared site navbar -->
 <jsp:include page="/WEB-INF/components/navbar.jsp" />
 
 <main class="page-content">
   <div class="container">
 
     <%
-      // eventId in query string for breadcrumbs/back links
+      // Determine eventId for breadcrumb + back links:
+      // 1) prefer query string eventId
+      // 2) fallback to request attribute (set by servlet)
       String eventId = request.getParameter("eventId");
       if (eventId == null || eventId.trim().isEmpty()) {
         Object eventIdObj = request.getAttribute("eventId");
@@ -292,6 +327,7 @@ input:focus {
       }
     %>
 
+    <!-- Breadcrumbs + back button -->
     <div class="crumbRow">
       <div class="crumbLeft">
         <div class="crumb">
@@ -302,28 +338,31 @@ input:focus {
         </div>
       </div>
 
+      <!-- Back to details page for the current event -->
       <a class="btn ghost"
          href="<%= request.getContextPath() %>/GetEventList?eventId=<%= eventId %>">← Back to details</a>
     </div>
 
     <%
-      // From your booking servlet after POST:
-      // request.setAttribute("apiStatus", resp.getStatus());
-      // request.setAttribute("apiResult", apiResultMap);
+      // Booking outcome values set by servlet (after POST):
+      // - apiStatus: HTTP status code from backend booking endpoint
+      // - apiResult: JSON body parsed into a Map (may contain message, bookingId, or error)
       Integer apiStatus = (Integer) request.getAttribute("apiStatus");
 
       @SuppressWarnings("unchecked")
       Map<String, Object> apiResult = (Map<String, Object>) request.getAttribute("apiResult");
 
-      // Event details (your servlet should load it for the left card)
+      // Event details set by servlet (used to render the left summary card)
       String err = (String) request.getAttribute("err");
       Event event = (Event) request.getAttribute("event");
     		  
+      // Image path set by servlet; fallback to default if missing
       String imgSrc = (String) request.getAttribute("imgSrc");
       if (imgSrc == null || imgSrc.isBlank()) {
         imgSrc = request.getContextPath() + "/images/default.png";
       }
       
+      // Pre-formatted start/end times set by servlet; fallback to "-" if missing
       String startTimeDisplay = (String) request.getAttribute("startTimeDisplay");
       String endTimeDisplay = (String) request.getAttribute("endTimeDisplay");
       if (startTimeDisplay == null || startTimeDisplay.isBlank())
@@ -331,12 +370,13 @@ input:focus {
       if (endTimeDisplay == null || endTimeDisplay.isBlank())
         endTimeDisplay = "-";
 
-      // Show success/error banners from apiResult if present
+      // Success banner: expects status 201 Created and a result payload
       if (apiStatus != null && apiStatus == 201 && apiResult != null) {
     %>
       <div class="msg success">
         <%= apiResult.get("message") != null ? apiResult.get("message") : "Booking successful." %>
         <%
+          // Optionally display bookingId if backend returns it
           if (apiResult.get("bookingId") != null) {
         %>
           <br>Booking ID: <%= apiResult.get("bookingId") %>
@@ -345,12 +385,14 @@ input:focus {
         %>
       </div>
     <%
+      // Error banner: if backend returned an "error" message in JSON
       } else if (apiResult != null && apiResult.get("error") != null) {
     %>
       <div class="msg error"><%= apiResult.get("error") %></div>
     <%
       }
 
+      // If servlet set err, show a top-level error message and stop rendering the booking grid
       if (err != null) {
         String msg = "Error loading booking form. Please try again later.";
         if ("NotFound".equals(err)) msg = "Event not found.";
@@ -360,19 +402,22 @@ input:focus {
       <div class="msg error"><%= msg %></div>
       <a class="btn primary" href="<%= request.getContextPath() %>/GetEventList">Return to events</a>
     <%
+      // If event is missing, show a message and stop rendering the booking grid
       } else if (event == null) {
     %>
       <div class="msg error">No event selected.</div>
       <a class="btn primary" href="<%= request.getContextPath() %>/GetEventList">Return to events</a>
     <%
+      // Main booking UI: event summary + booking form
       } else {
     %>
 
     <div class="bookingGrid">
 
-      <!-- Left: Event summary -->
+      <!-- Left: Event summary (read-only info so user knows what they're booking) -->
       <div class="card">
         <div class="heroTop">
+          <!-- Event image URL comes from servlet (imgSrc) -->
           <img src="<%= imgSrc %>" alt="Event image">
           <div class="idTag">Event ID: <%= event.getEventId() %></div>
         </div>
@@ -382,9 +427,11 @@ input:focus {
             <h1>Booking: <%= event.getTitle() %></h1>
           </div>
 
+          <!-- Location shown beneath title -->
           <p class="subline"><%= event.getLocation() %></p>
 
           <%
+            // Description is optional; show placeholder when missing
             String desc = event.getDescription();
             if (desc != null && !desc.trim().isEmpty()) {
           %>
@@ -397,6 +444,7 @@ input:focus {
             }
           %>
 
+          <!-- Start/End times use pre-formatted strings from servlet -->
           <div class="detailsBlock">
             <div class="detailRow">
               <span class="detailLabel">Start:</span>
@@ -414,16 +462,18 @@ input:focus {
         </div>
       </div>
 
-      <!-- Right: Booking form -->
+      <!-- Right: Booking form (posts to servlet, servlet posts to backend API) -->
       <div class="card">
         <div class="formCard">
           <h2>Guest Information</h2>
 
-          <!-- IMPORTANT:
-               Your booking servlet should POST to /services/events/book/{eventId}
-               via Jersey client. This JSP should POST to your servlet, NOT directly to the API.
+          <!--
+            Form posts to the servlet:
+            - The servlet will call POST /services/events/book/{eventId}
+            - Then it forwards back to this JSP with apiStatus/apiResult for banners
           -->
           <form action="<%= request.getContextPath() %>/GetEventBookingDetails" method="post">
+            <!-- Hidden eventId ensures servlet knows which event to book -->
             <input type="hidden" name="eventId" value="<%= event.getEventId() %>">
 
             <div class="formGroup">
@@ -452,6 +502,7 @@ input:focus {
   </div>
 </main>
 
+<!-- Shared site footer -->
 <jsp:include page="/WEB-INF/components/footer.jsp" />
 
 </body>

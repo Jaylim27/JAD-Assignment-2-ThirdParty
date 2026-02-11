@@ -1,5 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<!-- Page directive:
+     - language="java": JSP scripting uses Java
+     - contentType + pageEncoding: ensures UTF-8 output to support special characters properly -->
 
 <!DOCTYPE html>
 <html>
@@ -7,8 +10,13 @@
 <meta charset="UTF-8">
 <title>Community Club | Home</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- meta viewport ensures the page scales correctly on mobile devices -->
 
 <style>
+  /*
+    CSS variables (theme tokens):
+    - Used across the site for consistent colors and spacing.
+  */
   :root{
     --bg:#f6f8fb;
     --card:#ffffff;
@@ -21,7 +29,10 @@
     --radius: 16px;
   }
 
+  /* Global box sizing; prevents padding/borders from breaking element widths */
   *{ box-sizing:border-box; }
+
+  /* Base body styling */
   body{
     margin:0;
     font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
@@ -29,15 +40,22 @@
     color: var(--text);
   }
 
+  /* Main container centers content and sets max width */
   .container{
     max-width:1100px;
     margin:0 auto;
     padding: 0 16px;
   }
 
+  /*
+    Hero section (top of page):
+    - Contains welcome message, CTAs, and a quick info panel.
+  */
   .hero{
     padding: 22px 0 10px;
   }
+
+  /* Hero card uses a two-column grid (text + quick info) on large screens */
   .heroCard{
     display:grid;
     grid-template-columns: 1.15fr .85fr;
@@ -48,11 +66,13 @@
     border-radius: var(--radius);
     box-shadow: var(--shadow);
   }
+
   .hero h1{
     margin:0 0 6px;
     font-size:30px;
     letter-spacing:.2px;
   }
+
   .hero p{
     margin:0;
     color:var(--muted);
@@ -60,6 +80,7 @@
     font-size:14.5px;
   }
 
+  /* Quick info panel on the right side of hero (or below on smaller screens) */
   .quickPanel{
     background:#ffffff;
     border:1px solid var(--line);
@@ -78,9 +99,12 @@
     line-height:1.6;
   }
 
+  /* Section wrapper for the content below hero */
   .section{
     padding: 14px 0 34px;
   }
+
+  /* Section title row (heading + description) */
   .sectionTitle{
     display:flex;
     justify-content:space-between;
@@ -99,11 +123,18 @@
     font-size:13.5px;
   }
 
+  /* Grid for highlight cards */
   .grid{
     display:grid;
     grid-template-columns: repeat(3, 1fr);
     gap:14px;
   }
+
+  /*
+    Responsive behavior:
+    - On <= 980px: hero switches to 1 column and grid becomes 2 columns
+    - On <= 640px: grid becomes 1 column
+  */
   @media (max-width: 980px){
     .heroCard{ grid-template-columns: 1fr; }
     .grid{ grid-template-columns: repeat(2, 1fr); }
@@ -112,6 +143,7 @@
     .grid{ grid-template-columns: 1fr; }
   }
 
+  /* Base card styling used for Highlights */
   .card{
     background: var(--card);
     border:1px solid var(--line);
@@ -131,12 +163,16 @@
     overflow:hidden;
     background:#eef2ff;
   }
+
+  /* Image fills the top area; cover crops if needed to avoid white borders */
   .cardTop img{
     width:100%;
     height:100%;
-    object-fit:cover;     /* fills the top area, no white borders */
+    object-fit:cover;
     display:block;
   }
+
+  /* Dark gradient overlay to improve readability of text/labels over the image */
   .cardTop::after{
     content:"";
     position:absolute;
@@ -145,6 +181,7 @@
     pointer-events:none;
   }
 
+  /* Pill label (e.g., "Events", "Services") positioned over image */
   .pill{
     position:absolute;
     top:12px; left:12px;
@@ -155,9 +192,10 @@
     font-size:12px;
     font-weight:800;
     color:var(--muted);
-    z-index:2;
+    z-index:2; /* ensures pill sits above overlay */
   }
 
+  /* Card body text area */
   .cardBody{
     padding:12px 14px 14px;
     display:flex;
@@ -177,12 +215,15 @@
     line-height:1.5;
   }
 
+  /* CTA row used in hero section for primary actions */
   .ctaRow{
     margin-top: 14px;
     display:flex;
     gap:10px;
     flex-wrap:wrap;
   }
+
+  /* Base button styling */
   .btn{
     border:none;
     cursor:pointer;
@@ -194,11 +235,15 @@
     text-decoration:none;
     display:inline-block;
   }
+
+  /* Primary button with gradient + shadow */
   .btn.primary{
     background: linear-gradient(135deg, var(--brand), #38bdf8);
     color:#fff;
     box-shadow: 0 10px 18px rgba(14,165,233,.18);
   }
+
+  /* Ghost button with border */
   .btn.ghost{
     background:#fff;
     border:1px solid var(--line);
@@ -206,6 +251,10 @@
     font-weight:800;
   }
 
+  /*
+    Full height page layout helpers:
+    - Allows footer to stay at bottom even if content is short.
+  */
   html, body {
     height: 100%;
     margin: 0;
@@ -225,12 +274,13 @@
 
 <body class="page-layout">
 
-<!-- Navbar component -->
+<!-- Navbar component included from /WEB-INF (not directly accessible via URL) -->
 <jsp:include page="/WEB-INF/components/navbar.jsp" />
 
 <main class="page-content">
 <div class="container">
 
+  <!-- HERO SECTION: intro + buttons + quick info -->
   <section class="hero">
     <div class="heroCard">
       <div>
@@ -240,12 +290,15 @@
           and stay connected with what’s happening in the community.
         </p>
 
+        <!-- CTA links:
+             request.getContextPath() ensures correct path regardless of deployment context -->
         <div class="ctaRow">
           <a class="btn primary" href="<%= request.getContextPath() %>/GetEventList">Browse events</a>
           <a class="btn ghost" href="<%= request.getContextPath() %>/GetProductList">Explore services</a>
         </div>
       </div>
 
+      <!-- Quick info panel (static content) -->
       <div class="quickPanel">
         <h3>Quick info</h3>
         <ul>
@@ -257,6 +310,7 @@
     </div>
   </section>
 
+  <!-- HIGHLIGHTS SECTION: cards that introduce major site areas -->
   <section class="section">
     <div class="sectionTitle">
       <div>
@@ -270,11 +324,14 @@
       <div class="card">
         <div class="cardTop">
           <div class="pill">Events</div>
-          <!-- Put your events image here (save it in /assets or /images) -->
+
+          <!-- Static image path:
+               Ensure /images/events.png exists in your web app (e.g., /webapp/images/) -->
           <img
             src="<%= request.getContextPath() %>/images/events.png"
             alt="Community events">
         </div>
+
         <div class="cardBody">
           <h3>Upcoming activities</h3>
           <p>Workshops, interest groups, family activities, community drives, and more.</p>
@@ -285,11 +342,14 @@
       <div class="card">
         <div class="cardTop">
           <div class="pill">Services</div>
-          <!-- Put your services image here (save it in /assets or /images) -->
+
+          <!-- Static image path:
+               Ensure /images/services.png exists in your web app -->
           <img
             src="<%= request.getContextPath() %>/images/services.png"
             alt="Community services">
         </div>
+
         <div class="cardBody">
           <h3>Resident support</h3>
           <p>Assistance and information for community resources, programmes, and outreach.</p>
@@ -300,7 +360,7 @@
 </div>
 </main>
 
-<!-- Footer component -->
+<!-- Footer component included from /WEB-INF -->
 <jsp:include page="/WEB-INF/components/footer.jsp" />
 
 </body>

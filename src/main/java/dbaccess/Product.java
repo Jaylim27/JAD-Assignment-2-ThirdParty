@@ -1,3 +1,8 @@
+// - Name: Lim Song Chern Jayden
+// - Admin No: P2424093
+// - Class: DIT/FT/2B/01
+// - Last Edited: 9/2/2026
+
 package dbaccess;
 
 // Represents a Product entity used in the application (POJO / JavaBean)
